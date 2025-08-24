@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+import * as fs from "fs";
 
 export class ElementPage {
   readonly page: Page;
@@ -127,6 +128,93 @@ async EnterFormFields() {
   await this.page.locator("#currentAddress").fill("RamPur, Varanasi");
   await this.page.locator("#permanentAddress").fill("RamPur, Varanasi");
 }
+async VerifyWebTableScreen(){
+  await this.page.locator("//span[contains(.,'Web Tables')]").click();
+  await expect(this.page.locator(".text-center")).toHaveText("Web Tables");
+}
+  // add data for table
+async EnterDataInTable(){
+  await this.page.locator("#addNewRecordButton").click()
+  await expect(this.page.locator("#registration-form-modal")).toHaveText("Registration Form");
+  await this.page.locator("#firstName").fill("Anshika");
+  await this.page.locator("#lastName").fill("Yadav");
+  await this.page.locator("#userEmail").fill("anshikayad02@gmail.com");
+  await this.page.locator("#age").fill("23");
+  await this.page.locator("#salary").fill("5");
+  await this.page.locator("#department").fill("QA/Testing")
+  await this.page.locator("#submit").click();
+}
+async SearchEntry(){
+  await this.page.locator("#searchBox").fill("Anshika")
+}
 
+async EditEntry(){
+  await this.page.locator("//span[starts-with(@id, 'edit-record-')]").click();
+  await this.page.locator("#submit").click();
+
+}
+async DeleteEntry(){
+  await this.page.locator("//span[starts-with(@id,'delete-record-')]").click();
+}
+
+async ButtonFeature(){
+  await this.page.locator("//span[contains(.,'Buttons')]").click();
+  await expect(this.page.locator(".text-center")).toContainText("Buttons");
+}
+async DoubleClick(){
+  await this.page.locator("#doubleClickBtn").dblclick();
+  await expect(this.page.locator("#doubleClickMessage")).toHaveText("You have done a double click");
+}
+async RightClick(){
+  await this.page.locator("#rightClickBtn").click({ button: 'right' });
+  await expect (this.page.locator("#rightClickMessage")).toHaveText("You have done a right click");
+}
+async LeftClick(){
+  await this.page.locator("//button[text()='Click Me']").click();
+  await expect(this.page.locator("#dynamicClickMessage")).toHaveText("You have done a dynamic click");
+}
+async LinkNavigateion(){
+  await this.page.locator("//span[text()='Links']").click();
+  await expect(this.page.locator(".text-center")).toHaveText("Links")
+}
+async LinkOpenInNewtab(){
+  await expect (this.page.locator("//strong[.='Following links will open new tab']")).toHaveText("Following links will open new tab");
+  const [newPage] = await Promise.all([
+    this.page.context().waitForEvent('page'), // listen for new tab
+    this.page.locator("#simpleLink").click()   // click the link
+  ]);
+
+  // Wait for the new page to load
+  await newPage.waitForLoadState();
+
+  // Assert new tab URL
+  await expect(newPage).toHaveURL("https://demoqa.com/"); // replace with expected URL
+  await expect(this.page.locator("//strong[.='Following links will open new tab']")).toBeVisible();
+
+}
+async VerifyDownloadAndUpload(){
+  await this.page.locator("//li[contains(.,'Upload and Download')]").click();
+  await expect(this.page.locator(".text-center")).toHaveText("Upload and Download");
+}
+async DownloadFile(){
+  const [download] = await Promise.all([
+    this.page.waitForEvent("download"),
+    this.page.locator("#downloadButton").click()
+  ]);
+  const suggestedFileName = download.suggestedFilename();
+  const downloadPath = `downloads/${suggestedFileName}`;
+  // Ensure downloads folder exists
+  if (!fs.existsSync("downloads")) {
+    fs.mkdirSync("downloads");
+  }
+  await download.saveAs(downloadPath);
+  //  Correct usage
+  expect(fs.existsSync(downloadPath)).toBeTruthy();
+}
+async UploadFile(){
+   await expect(this.page.locator("label[for='uploadFile']")).toHaveText("Select a file");
+   await this.page.setInputFiles("#uploadFile", "fixtures/sampleFile.jpeg");
+   await expect(this.page.locator("#uploadedFilePath")).toContainText("sampleFile.jpeg");
+}
 }
 

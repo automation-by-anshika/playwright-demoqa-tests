@@ -52,6 +52,18 @@ npx playwright test --project=webkit
 Generate an HTML report: npx playwright test --reporter=html
 Open the last HTML report: npx playwright show-report
 
+**Install Allure dependencies**
+npm install --save-dev allure-playwright
+npm install -g allure-commandline
+Run Playwright tests normally: npx playwright test
+Generate Allure report - 
+-- allure generate allure-results --clean -o allure-report
+-- allure open allure-report
+
+npm run test
+npm run allure:report
+npm run allure:open
+
 **Project Structure**
 📦 playwright-automation
  ┣ 📂 pages

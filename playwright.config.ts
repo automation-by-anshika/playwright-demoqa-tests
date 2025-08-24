@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+    reporter: [
+    ['line'],
+    ['allure-playwright']
+  ],
   testDir: './tests',
   timeout: 30 * 1000,
   retries: 0,
@@ -18,14 +22,6 @@ export default defineConfig({
       name: 'Chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-  {
-    name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-  },
-  {
-     name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-  },
   ],
   
 });

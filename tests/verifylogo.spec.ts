@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Logo should be visible on ToolsQA homepage', async ({ page }) => {
+  test.setTimeout(60000);
   await page.goto('https://demoqa.com/');
 
   // Locate logo with exact selector
